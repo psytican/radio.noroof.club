@@ -11,9 +11,6 @@ services:
       - ./images/icecast/config/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
       - ./images/icecast/config/icecast2.template.xml:/etc/icecast2/icecast.template.xml
       - ./images/icecast/bin/stats.template.sh:/var/icecast2/stats.template.sh
-    ports:
-      - "8000:8000"
-      - "8001:8001"
     environment:
       ICECAST_LOCATION: ${ICECAST_LOCATION}
       ICECAST_ADMIN: ${ICECAST_ADMIN}
