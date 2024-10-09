@@ -1,0 +1,81 @@
+<icecast>
+    <hostname>%ICECAST_HOSTNAME%</hostname>
+    <location>%ICECAST_LOCATION%</location>
+    <admin>%ICECAST_ADMIN%</admin>
+
+    <limits>
+        <clients>%ICECAST_LIMIT_CLIENTS%</clients>
+        <sources>%ICECAST_LIMIT_SOURCES%</sources>
+        <threadpool>5</threadpool>
+        <queue-size>102400</queue-size>
+        <client-timeout>30</client-timeout>
+        <header-timeout>15</header-timeout>
+        <source-timeout>10</source-timeout>
+        <burst-on-connect>1</burst-on-connect>
+        <burst-size>65535</burst-size>
+    </limits>
+
+    <authentication>
+        <source-password>%ICECAST_AUTHENTICATION_SOURCE_PASSWORD%</source-password>
+        <relay-password>%ICECAST_AUTHENTICATION_RELAY_PASSWORD%</relay-password>
+        <admin-user>%ICECAST_AUTHENTICATION_ADMIN_USER%</admin-user>
+        <admin-password>%ICECAST_AUTHENTICATION_ADMIN_PASSWORD%</admin-password>
+    </authentication>
+
+    <listen-socket>
+        <port>%ICECAST_PORT%</port>
+    </listen-socket>
+
+    <listen-socket>
+        <port>%ICECAST_PORT_SECOND%</port>
+    </listen-socket>
+
+    <mount>
+        <mount-name>%ICECAST_LIVE_MOUNT%</mount-name>
+        <charset>UTF-8</charset>
+
+        <public>1</public>
+
+        <fallback-mount>%ICECAST_NONSTOP_MOUNT%</fallback-mount>
+        <fallback-override>1</fallback-override>
+        <fallback-when-full>1</fallback-when-full>
+
+        <stream-name>%STREAM_NAME%</stream-name>
+        <stream-description>%STREAM_DESCRIPTION%</stream-description>
+        <stream-url>%STREAM_URL%</stream-url>
+
+        <genre>%STREAM_GENRE%</genre>
+        <bitrate>%STREAM_BITRATE%</bitrate>
+        <type>application/mp3</type>
+    </mount>
+
+    <mount>
+        <mount-name>%ICECAST_NONSTOP_MOUNT%</mount-name>
+        <charset>UTF-8</charset>
+
+        <hidden>1</hidden>
+    </mount>
+
+    <fileserve>1</fileserve>
+
+    <paths>
+        <basedir>/usr/share/icecast2</basedir>
+        <logdir>/var/log/icecast2</logdir>
+        <alias source="/" dest="%ICECAST_LIVE_MOUNT%"/>
+    </paths>
+
+    <logging>
+        <accesslog>access.log</accesslog>
+        <errorlog>error.log</errorlog>
+        <loglevel>3</loglevel>
+        <logsize>10000</logsize>
+    </logging>
+
+    <security>
+        <chroot>1</chroot>
+        <changeowner>
+            <user>icecast2</user>
+            <group>icecast2</group>
+        </changeowner>
+    </security>
+</icecast>

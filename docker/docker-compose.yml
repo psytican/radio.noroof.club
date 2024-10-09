@@ -1,0 +1,118 @@
+volumes:
+  stats_data_volume: {}
+services:
+  icecast:
+    container_name: ${COMPOSE_PROJECT_NAME}--icecast
+    hostname: ${COMPOSE_PROJECT_NAME}--icecast
+    build:
+      context: ./images/icecast
+    volumes:
+      - stats_data_volume:/var/icecast2/stats:rw
+      - ./images/icecast/config/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+      - ./images/icecast/config/icecast2.template.xml:/etc/icecast2/icecast.template.xml
+      - ./images/icecast/bin/stats.template.sh:/var/icecast2/stats.template.sh
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    environment:
+      ICECAST_LOCATION: ${ICECAST_LOCATION}
+      ICECAST_ADMIN: ${ICECAST_ADMIN}
+      ICECAST_HOSTNAME: ${COMPOSE_PROJECT_NAME}--icecast
+      ICECAST_PORT: ${ICECAST_PORT}
+      ICECAST_PORT_SECOND: ${ICECAST_PORT_SECOND}
+      ICECAST_LIVE_MOUNT: ${ICECAST_LIVE_MOUNT}
+      ICECAST_NONSTOP_MOUNT: ${ICECAST_NONSTOP_MOUNT}
+      ICECAST_LIMIT_CLIENTS: ${ICECAST_LIMIT_CLIENTS}
+      ICECAST_LIMIT_SOURCES: ${ICECAST_LIMIT_SOURCES}
+      ICECAST_AUTHENTICATION_SOURCE_PASSWORD: ${ICECAST_AUTHENTICATION_SOURCE_PASSWORD}
+      ICECAST_AUTHENTICATION_RELAY_PASSWORD: ${ICECAST_AUTHENTICATION_RELAY_PASSWORD}
+      ICECAST_AUTHENTICATION_ADMIN_USER: ${ICECAST_AUTHENTICATION_ADMIN_USER}
+      ICECAST_AUTHENTICATION_ADMIN_PASSWORD: ${ICECAST_AUTHENTICATION_ADMIN_PASSWORD}
+      STREAM_NAME: ${STREAM_NAME}
+      STREAM_DESCRIPTION: ${STREAM_DESCRIPTION}
+      STREAM_URL: ${STREAM_URL}
+      STREAM_GENRE: ${STREAM_GENRE}
+      STREAM_BITRATE: ${STREAM_BITRATE}
+    restart: ${RESTART_FLAG}
+    deploy:
+      resources:
+        limits:
+          memory: ${MEMORY_LIMIT}
+        reservations:
+          memory: ${MEMORY_RESERVATION}
+  ezstream:
+    container_name: ${COMPOSE_PROJECT_NAME}--ezstream
+    hostname: ${COMPOSE_PROJECT_NAME}--ezstream
+    build:
+      context: ./images/ezstream
+    volumes:
+      - ${EZSTREAM_PLAYLIST_PATH}:/var/ezstream/playlist:ro
+      - stats_data_volume:/var/ezstream/stats:rw
+      - ./images/ezstream/config/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+      - ./images/ezstream/config/ezstream.template.xml:/etc/ezstream.template.xml
+      - ./images/ezstream/bin/playlist.sh:/var/ezstream/playlist.sh
+      - ./images/ezstream/bin/metadata.sh:/var/ezstream/metadata.sh
+    environment:
+      ICECAST_HOSTNAME: ${COMPOSE_PROJECT_NAME}--icecast
+      ICECAST_PORT: ${ICECAST_PORT}
+      ICECAST_NONSTOP_MOUNT: ${ICECAST_NONSTOP_MOUNT}
+      ICECAST_AUTHENTICATION_SOURCE_PASSWORD: ${ICECAST_AUTHENTICATION_SOURCE_PASSWORD}
+      STREAM_NAME: ${STREAM_NAME}
+      STREAM_DESCRIPTION: ${STREAM_DESCRIPTION}
+      STREAM_URL: ${STREAM_URL}
+      STREAM_GENRE: ${STREAM_GENRE}
+      STREAM_BITRATE: ${STREAM_BITRATE}
+    depends_on:
+      - icecast
+    links:
+      - icecast
+    restart: ${RESTART_FLAG}
+    deploy:
+      resources:
+        limits:
+          memory: ${MEMORY_LIMIT}
+        reservations:
+          memory: ${MEMORY_RESERVATION}
+  php_fpm:
+    container_name: ${COMPOSE_PROJECT_NAME}--php-fpm
+    hostname: ${COMPOSE_PROJECT_NAME}--php-fpm
+    build:
+      context: ./images/php_fpm
+    volumes:
+      - ../src:/opt/app:rw
+      - stats_data_volume:/opt/app/stats:ro
+    restart: ${RESTART_FLAG}
+    deploy:
+      resources:
+        limits:
+          memory: ${MEMORY_LIMIT}
+        reservations:
+          memory: ${MEMORY_RESERVATION}
+  nginx:
+    container_name: ${COMPOSE_PROJECT_NAME}--nginx
+    hostname: ${COMPOSE_PROJECT_NAME}--nginx
+    image: nginx:1.23.3
+    volumes:
+      - ./images/nginx/templates:/etc/nginx/templates
+      - ./volumes/logs/nginx:/var/log/nginx:rw
+      - ../src:/opt/app:ro
+    ports:
+      - ${NGINX_PORT_80}:80
+    environment:
+      ROOT_PATH: /opt/app
+      ICECAST_HOSTNAME: ${COMPOSE_PROJECT_NAME}--icecast
+      ICECAST_PORT: ${ICECAST_PORT}
+      ICECAST_LIVE_MOUNT: ${ICECAST_LIVE_MOUNT}
+      STREAM_URL: ${STREAM_URL}
+    depends_on:
+      - php_fpm
+    links:
+      - php_fpm
+      - icecast
+    restart: ${RESTART_FLAG}
+    deploy:
+      resources:
+        limits:
+          memory: ${MEMORY_LIMIT}
+        reservations:
+          memory: ${MEMORY_RESERVATION}

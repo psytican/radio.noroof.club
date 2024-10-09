@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ezstream>
+    <servers>
+        <server>
+            <name>default</name>
+            <protocol>HTTP</protocol>
+            <hostname>%ICECAST_HOSTNAME%</hostname>
+            <port>%ICECAST_PORT%</port>
+            <user>source</user>
+            <password>%ICECAST_AUTHENTICATION_SOURCE_PASSWORD%</password>
+            <reconnect_attempts>20</reconnect_attempts>
+        </server>
+    </servers>
+
+    <streams>
+        <stream>
+            <mountpoint>%ICECAST_NONSTOP_MOUNT%</mountpoint>
+            <public>No</public>
+            <format>MP3</format>
+            <encoder>Lame-CBR%STREAM_BITRATE%</encoder>
+            <stream_name>%STREAM_NAME%</stream_name>
+            <stream_url>%STREAM_URL%</stream_url>
+            <stream_genre>%STREAM_GENRE%</stream_genre>
+            <stream_description>%STREAM_DESCRIPTION%</stream_description>
+            <stream_quality>1.5</stream_quality>
+            <stream_bitrate>16</stream_bitrate>
+            <stream_samplerate>44100</stream_samplerate>
+            <stream_channels>2</stream_channels>
+        </stream>
+    </streams>
+
+    <intakes>
+        <intake>
+            <type>program</type>
+            <filename>/var/ezstream/playlist.sh</filename>
+            <shuffle>No</shuffle>
+            <stream_once>No</stream_once>
+        </intake>
+    </intakes>
+
+    <metadata>
+        <program>/var/ezstream/metadata.sh</program>
+        <format_str>@s@ on %STREAM_NAME%</format_str>
+        <refresh_interval>-1</refresh_interval>
+        <normalize_strings>Yes</normalize_strings>
+        <no_updates>Yes</no_updates>
+    </metadata>
+
+    <decoders>
+        <decoder>
+            <name>MadPlay</name>
+            <program>madplay -b 16 -R 44100 -S -o raw:- @T@</program>
+            <file_ext>.mp3</file_ext>
+        </decoder>
+    </decoders>
+
+    <encoders>
+        <encoder>
+            <name>Lame-CBR%STREAM_BITRATE%</name>
+            <format>MP3</format>
+            <program>lame --preset cbr %STREAM_BITRATE% -r -s 44.1 --bitwidth 16 - -</program>
+        </encoder>
+    </encoders>
+</ezstream>
