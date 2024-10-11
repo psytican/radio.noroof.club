@@ -90,7 +90,7 @@ services:
     hostname: ${COMPOSE_PROJECT_NAME}--nginx
     image: nginx:1.23.3
     volumes:
-      - ./images/nginx/templates:/etc/nginx/templates
+      - ${NGINX_CONF_TEMPLATE}:/etc/nginx/templates/default.conf.template
       - ./volumes/logs/nginx:/var/log/nginx:rw
       - ../src:/opt/app:ro
       - ${NGINX_CERTS_PATH}:/etc/nginx/certs
