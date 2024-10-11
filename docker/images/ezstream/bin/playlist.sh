@@ -28,7 +28,7 @@ get_random_track () {
 
     in_previous_playlist_path=$(grep -q "$random_track" $previous_playlist_path)
 
-    if [ "$random_track" == "$track_prev" ] || [ "$random_track" == "$track_now" || $in_previous_playlist_path ]
+    if [ "$random_track" == "$track_prev" ] || [ "$random_track" == "$track_now" ] || [ $in_previous_playlist_path ]
     then
         random_track=$(get_random_track)
     fi
