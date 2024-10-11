@@ -10,6 +10,8 @@ previous_track_path=/tmp/icecast2_previous_track
 current_track_path=/tmp/icecast2_current_track
 next_track_path=/tmp/icecast2_next_track
 
+[ -f previous_playlist_path ] || touch previous_playlist_path
+[ -f previous_playlist_path_temp ] || touch previous_playlist_path_temp
 [ -f $previous_track_path ] || touch $previous_track_path
 [ -f $current_track_path ] || touch $current_track_path
 [ -f $next_track_path ] || touch $next_track_path
