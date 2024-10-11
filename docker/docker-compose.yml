@@ -93,8 +93,10 @@ services:
       - ./images/nginx/templates:/etc/nginx/templates
       - ./volumes/logs/nginx:/var/log/nginx:rw
       - ../src:/opt/app:ro
+      - ${NGINX_CERTS_PATH}:/etc/nginx/certs
     ports:
       - ${NGINX_PORT_80}:80
+      - ${NGINX_PORT_443}:443
     environment:
       ROOT_PATH: /opt/app
       ICECAST_HOSTNAME: ${COMPOSE_PROJECT_NAME}--icecast
