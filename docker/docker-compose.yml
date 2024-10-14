@@ -93,7 +93,12 @@ services:
       - ${NGINX_CONF_TEMPLATE}:/etc/nginx/templates/default.conf.template
       - ./volumes/logs/nginx:/var/log/nginx:rw
       - ../src:/opt/app:ro
-      - ${NGINX_CERTS_PATH}:/etc/nginx/certs
+      - type: bind
+        source: ${NGINX_CERTS_PATH}/fullchain.pem
+        target: /etc/nginx/certs/fullchain.pem
+      - type: bind
+        source: ${NGINX_CERTS_PATH}/privkey.pem
+        target: /etc/nginx/certs/privkey.pem
     ports:
       - ${NGINX_PORT_80}:80
       - ${NGINX_PORT_443}:443
